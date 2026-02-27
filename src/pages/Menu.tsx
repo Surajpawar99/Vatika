@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Plus } from 'lucide-react';
-import { useCart } from '../context/CartContext';
 import ReviewSection from '../components/ReviewSection';
 
 interface Review {
@@ -13,7 +11,6 @@ interface Review {
 
 const Menu = () => {
   const [activeCategory, setActiveCategory] = useState('All');
-  const { addItem } = useCart();
   
   // Initial dummy reviews
   const [reviews, setReviews] = useState<Record<number, Review[]>>({
@@ -142,12 +139,6 @@ const Menu = () => {
                 <h3 className="text-xl font-serif font-bold text-stone-900">{item.name}</h3>
               </div>
               <p className="text-stone-500 text-sm mb-4 line-clamp-2">{item.description}</p>
-              <button 
-                onClick={() => addItem(item)}
-                className="w-full py-2 border border-stone-200 rounded-lg text-stone-600 font-medium hover:bg-stone-50 hover:text-stone-900 transition-colors flex items-center justify-center gap-2 mb-4"
-              >
-                <Plus size={16} /> Add to Order
-              </button>
 
               {/* Review Section */}
               <ReviewSection 

@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingBag, User } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useCart } from '../context/CartContext';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
-  const { totalItems } = useCart();
 
   const navItems = [
     { name: 'Home', path: '/' },
-    { name: 'Menu', path: '/menu' },
     { name: 'Vatika Menu', path: '/vatika' },
-    { name: 'Order Online', path: '/order' },
     { name: 'Book Table', path: '/book' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'About Us', path: '/about' },
@@ -43,33 +39,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                   {item.name}
                 </Link>
               ))}
-              <Link
-                to="/admin"
-                className="p-2 rounded-full hover:bg-stone-100 text-stone-600 transition-colors"
-                title="Admin Panel"
-              >
-                <User size={20} />
-              </Link>
-              <Link to="/order" className="p-2 rounded-full hover:bg-stone-100 text-stone-600 transition-colors relative">
-                <ShoppingBag size={20} />
-                {totalItems > 0 && (
-                  <span className="absolute top-0 right-0 h-4 w-4 bg-orange-600 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
             </div>
 
             {/* Mobile Menu Button */}
             <div className="md:hidden flex items-center space-x-4">
-               <Link to="/order" className="p-2 rounded-full hover:bg-stone-100 text-stone-600 transition-colors relative">
-                <ShoppingBag size={20} />
-                {totalItems > 0 && (
-                  <span className="absolute top-0 right-0 h-4 w-4 bg-orange-600 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
-                    {totalItems}
-                  </span>
-                )}
-              </Link>
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 rounded-md text-stone-600 hover:text-stone-900 focus:outline-none"
@@ -104,13 +77,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     {item.name}
                   </Link>
                 ))}
-                <Link
-                  to="/admin"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="block px-3 py-4 text-base font-medium text-stone-600 hover:text-stone-900 hover:bg-stone-50"
-                >
-                  Admin Panel
-                </Link>
               </div>
             </motion.div>
           )}
@@ -132,7 +98,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div>
             <h4 className="text-white font-medium mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/menu" className="hover:text-white transition-colors">Menu</Link></li>
+              <li><Link to="/vatika" className="hover:text-white transition-colors">Menu</Link></li>
               <li><Link to="/book" className="hover:text-white transition-colors">Reservations</Link></li>
               <li><Link to="/gallery" className="hover:text-white transition-colors">Gallery</Link></li>
             </ul>
@@ -140,10 +106,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div>
             <h4 className="text-white font-medium mb-4">Contact</h4>
             <ul className="space-y-2 text-sm">
-              <li>123 Culinary Avenue</li>
-              <li>New York, NY 10012</li>
-              <li>(555) 123-4567</li>
-              <li>hello@gourmethaven.com</li>
+              <li>7R46+J2W, Vasmat Road</li>
+              <li>Parbhani, Maharashtra 431402</li>
+              <li>090229 60646</li>
+              <li>hello@vatikapureveg.com</li>
             </ul>
           </div>
           <div>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ShoppingCart, ChevronRight, Star, Clock, MapPin, Phone, Info, Plus } from 'lucide-react';
-import { useCart } from '../context/CartContext';
+import { Search, ChevronRight, Star, Clock, MapPin, Phone, Info } from 'lucide-react';
 
 interface MenuItem {
   name: string;
@@ -316,7 +315,6 @@ const menuData: Category[] = [
 const VatikaMenu: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState(menuData[0].id);
-  const { addItem, totalItems } = useCart();
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const filteredMenu = menuData.map(category => ({
@@ -391,16 +389,6 @@ const VatikaMenu: React.FC = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 rounded-full border border-amber-200 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all text-sm bg-stone-50"
                 />
-              </div>
-              <div className="relative">
-                <button className="p-2.5 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors shadow-lg shadow-amber-600/20">
-                  <ShoppingCart size={20} />
-                </button>
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-stone-900 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
-                    {totalItems}
-                  </span>
-                )}
               </div>
             </div>
           </div>
@@ -486,43 +474,42 @@ const VatikaMenu: React.FC = () => {
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
                           transition={{ delay: idx * 0.05 }}
-                          className="bg-white p-5 rounded-2xl border border-amber-100 shadow-sm hover:shadow-xl hover:border-amber-300 transition-all group relative overflow-hidden"
+                          className="bg-white rounded-2xl border border-amber-100 shadow-sm hover:shadow-xl hover:border-amber-300 transition-all group relative overflow-hidden flex flex-col h-full"
                         >
-                          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-bl-[100px] -mr-12 -mt-12 transition-all group-hover:bg-amber-100"></div>
-                          
-                          <div className="flex justify-between items-start mb-4 relative z-10">
-                            <div className="flex-grow pr-4">
-                              <div className="flex items-center gap-2 mb-1">
-                                <div className="w-3 h-3 border border-green-600 flex items-center justify-center p-[1px]">
-                                  <div className="w-full h-full bg-green-600 rounded-full"></div>
-                                </div>
-                                <h3 className="text-base font-bold text-stone-800 group-hover:text-amber-900 transition-colors">
-                                  {item.name}
-                                </h3>
-                              </div>
-                              <p className="text-xs text-stone-500 line-clamp-2 italic">
-                                Authentic preparation with premium ingredients.
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-lg font-serif font-bold text-amber-700">₹{item.price}</span>
-                            </div>
+                          {/* Dish Image */}
+                          <div className="h-48 overflow-hidden relative bg-stone-100">
+                            <img
+                              src={`https://source.unsplash.com/600x400/?${encodeURIComponent(item.name.replace(/ /g, ','))},food,indian`}
+                              alt={item.name}
+                              loading="lazy"
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                           </div>
 
-                          <div className="flex justify-between items-center mt-4 relative z-10">
-                            <div className="flex gap-1">
-                               <Star size={10} className="fill-amber-400 text-amber-400" />
-                               <Star size={10} className="fill-amber-400 text-amber-400" />
-                               <Star size={10} className="fill-amber-400 text-amber-400" />
-                               <Star size={10} className="fill-amber-400 text-amber-400" />
-                               <Star size={10} className="text-amber-200" />
+                          {/* Content */}
+                          <div className="p-5 flex flex-col flex-grow">
+                            <div className="flex justify-between items-start mb-3">
+                              <h3 className="text-lg font-bold text-stone-800 group-hover:text-amber-700 transition-colors leading-tight pr-2">
+                                {item.name}
+                              </h3>
+                              <span className="text-lg font-serif font-bold text-amber-700 whitespace-nowrap">₹{item.price}</span>
                             </div>
-                            <button
-                              onClick={() => addItem({ id: Math.random(), name: item.name, price: item.price })}
-                              className="flex items-center gap-2 px-5 py-2 bg-amber-600 text-white rounded-full text-xs font-bold hover:bg-stone-900 transition-all shadow-md active:scale-95"
-                            >
-                              <Plus size={14} /> ADD
-                            </button>
+                            
+                            <div className="mt-auto pt-3 flex justify-between items-center border-t border-stone-50">
+                               <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 border border-green-600 flex items-center justify-center p-[1px]">
+                                     <div className="w-full h-full bg-green-600 rounded-full"></div>
+                                  </div>
+                                  <div className="flex gap-0.5">
+                                    <Star size={12} className="fill-amber-400 text-amber-400" />
+                                    <Star size={12} className="fill-amber-400 text-amber-400" />
+                                    <Star size={12} className="fill-amber-400 text-amber-400" />
+                                    <Star size={12} className="fill-amber-400 text-amber-400" />
+                                    <Star size={12} className="fill-amber-400 text-amber-400" />
+                                  </div>
+                               </div>
+                            </div>
                           </div>
                         </motion.div>
                       ))}
@@ -548,6 +535,100 @@ const VatikaMenu: React.FC = () => {
           </AnimatePresence>
         </div>
       </main>
+
+      {/* Contact & Location Section */}
+      <section className="py-16 bg-stone-50 border-t border-amber-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-amber-900 mb-4">Contact & Location</h2>
+            <div className="w-24 h-1 bg-amber-600 mx-auto rounded-full"></div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Contact Details */}
+            <div className="space-y-8">
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-amber-100">
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center shrink-0">
+                    <MapPin className="text-amber-600" size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-stone-800 mb-2">Visit Us</h3>
+                    <p className="text-stone-600 leading-relaxed">
+                      7R46+J2W, Vasmat Road, Near MIDC,<br />
+                      Opposite Jain Dadawadi, Satkar Colony,<br />
+                      Madhav Nagar, Parbhani, Maharashtra 431402
+                    </p>
+                    <a 
+                      href="https://www.google.com/maps/search/?api=1&query=Vatika+Pure+Veg+Parbhani+Maharashtra" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 mt-4 text-amber-600 font-bold hover:text-amber-700 transition-colors"
+                    >
+                      Get Directions <ChevronRight size={16} />
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center shrink-0">
+                    <Phone className="text-amber-600" size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-stone-800 mb-2">Call Us</h3>
+                    <a href="tel:09022960646" className="text-xl font-serif font-bold text-amber-700 hover:text-amber-800 transition-colors">
+                      090229 60646
+                    </a>
+                    <p className="text-xs text-stone-500 mt-1">Available during opening hours</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reviews */}
+              <div className="bg-white p-8 rounded-2xl shadow-sm border border-amber-100">
+                <h3 className="text-lg font-bold text-stone-800 mb-6 flex items-center gap-2">
+                  <Star className="fill-amber-400 text-amber-400" size={20} />
+                  Reviews on the Web
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 bg-stone-50 rounded-xl border border-stone-100 text-center">
+                    <div className="text-red-600 font-black text-xl mb-1">Zomato</div>
+                    <div className="flex justify-center items-center gap-1 mb-1">
+                      <span className="font-bold text-stone-900">4.2</span>
+                      <Star size={12} className="fill-amber-400 text-amber-400" />
+                      <span className="text-xs text-stone-500">/ 5</span>
+                    </div>
+                    <p className="text-xs text-stone-500">11 votes</p>
+                  </div>
+                  <div className="p-4 bg-stone-50 rounded-xl border border-stone-100 text-center">
+                    <div className="text-purple-600 font-black text-xl mb-1">magicpin</div>
+                    <div className="flex justify-center items-center gap-1 mb-1">
+                      <span className="font-bold text-stone-900">4.2</span>
+                      <Star size={12} className="fill-amber-400 text-amber-400" />
+                      <span className="text-xs text-stone-500">/ 5</span>
+                    </div>
+                    <p className="text-xs text-stone-500">23 reviews</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Map */}
+            <div className="h-full min-h-[400px] bg-stone-200 rounded-2xl overflow-hidden shadow-md border border-amber-100 relative">
+              <iframe 
+                src="https://maps.google.com/maps?q=7R46+J2W,+Vasmat+Road,+Parbhani&output=embed"
+                width="100%" 
+                height="100%" 
+                style={{ border: 0 }} 
+                allowFullScreen 
+                loading="lazy"
+                title="Vatika Pure Veg Location"
+                className="absolute inset-0 w-full h-full"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Premium Footer */}
       <footer className="bg-stone-900 text-stone-400 py-16">
@@ -578,11 +659,11 @@ const VatikaMenu: React.FC = () => {
               <ul className="space-y-4 text-sm">
                 <li className="flex items-start gap-3">
                   <MapPin size={18} className="text-amber-600 shrink-0" />
-                  <span>123 Royal Palace Road, Heritage District, City - 411001</span>
+                  <span>Vasmat Road, Near MIDC, Parbhani</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Phone size={18} className="text-amber-600 shrink-0" />
-                  <span>+91 98765 43210</span>
+                  <span>090229 60646</span>
                 </li>
                 <li className="flex items-center gap-3">
                   <Star size={18} className="text-amber-600 shrink-0" />

@@ -14,8 +14,8 @@ const Contact = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
         {[
-          { icon: MapPin, title: 'Visit Us', details: ['123 Culinary Avenue', 'New York, NY 10012'] },
-          { icon: Phone, title: 'Call Us', details: ['(555) 123-4567', '(555) 987-6543'] },
+          { icon: MapPin, title: 'Visit Us', details: ['7R46+J2W, Vasmat Road', 'Parbhani, Maharashtra 431402'] },
+          { icon: Phone, title: 'Call Us', details: ['090229 60646'] },
           { icon: Mail, title: 'Email Us', details: ['hello@vatikapureveg.com', 'events@vatikapureveg.com'] }
         ].map((item, index) => (
           <motion.div 
@@ -72,13 +72,16 @@ const Contact = () => {
             </form>
           </div>
           <div className="relative h-full min-h-[400px] bg-stone-800">
-             {/* Placeholder for Map */}
-             <div className="absolute inset-0 flex items-center justify-center text-stone-500">
-                <div className="text-center">
-                  <MapPin size={48} className="mx-auto mb-4 opacity-50" />
-                  <p>Map Integration Placeholder</p>
-                </div>
-             </div>
+             <iframe 
+                src="https://maps.google.com/maps?q=7R46+J2W,+Vasmat+Road,+Parbhani&output=embed"
+                width="100%" 
+                height="100%" 
+                style={{ border: 0 }} 
+                allowFullScreen 
+                loading="lazy"
+                title="Vatika Pure Veg Location"
+                className="absolute inset-0 w-full h-full"
+              ></iframe>
           </div>
         </div>
       </div>
