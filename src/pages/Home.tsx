@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Star, MapPin, Phone, Users, Utensils, Award, CheckCircle, ChevronRight, Car, Flame, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const reviews = [
   { customerName: "Akash Maid", reviewText: "जेवण खूप स्वादिष्ट होते, पण पापड थोडे मऊ होते, ते अधिक कुरकुरीत असू शकले असते. तरीही एकंदरीत सेवा आणि अनुभव उत्तम!", rating: 4 },
@@ -55,6 +56,21 @@ const Home = () => {
 
   return (
     <div className="font-sans text-stone-800 overflow-x-hidden">
+      <SEO 
+        title="Best Pure Veg Restaurant in Parbhani | Family Dining"
+        description="Vatika Pure Veg is Parbhani's top-rated family restaurant serving authentic Indian & Chinese cuisine. 100% Pure Veg, AC Dining, and Party Hall available."
+        schema={{
+          "@type": "Restaurant",
+          "name": "Vatika Pure Veg",
+          "servesCuisine": "Indian, Chinese, Punjabi",
+          "priceRange": "₹200-₹500",
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.2",
+            "reviewCount": "2711"
+          }
+        }}
+      />
       {/* 1. HERO SECTION */}
       <section className="relative min-h-[600px] h-auto md:h-[90vh] flex items-center justify-center overflow-hidden py-20 md:py-0">
         {/* Background Slideshow */}

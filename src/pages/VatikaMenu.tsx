@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ChevronRight, Star, Clock, MapPin, Phone, Info, ArrowUp, ArrowDown, Filter, X, Check, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { Search, Star, Filter, X, Check, SlidersHorizontal } from 'lucide-react';
+import SEO from '../components/SEO';
 
 interface MenuItem {
   name: string;
@@ -352,7 +353,6 @@ const VatikaMenu: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
-  const [sortOption, setSortOption] = useState<'price-asc' | 'price-desc' | 'name-asc' | 'name-desc'>('price-asc');
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   
   // Flatten menu data for easier filtering
@@ -377,12 +377,19 @@ const VatikaMenu: React.FC = () => {
     let result = allItems;
 
     // 1. Search
-    if (searchQuery) {
-      const lowerQuery = searchQuery.toLowerCase();
-      result = result.filter(item => 
-        item.name.toLowerCase().includes(lowerQuery) ||
-        item.description?.toLowerCase().includes(lowerQuery)
-      );
+    if (searchQuery.trim()) {
+      const searchTerms = searchQuery.toLowerCase().trim().split(/\s+/);
+      result = result.filter(item => {
+        const nameMatch = item.name.toLowerCase();
+        const descMatch = item.description?.toLowerCase() || '';
+        const categoryMatch = item.categoryGroup.toLowerCase();
+        
+        return searchTerms.every(term => 
+          nameMatch.includes(term) || 
+          descMatch.includes(term) ||
+          categoryMatch.includes(term)
+        );
+      });
     }
 
     // 2. Category Filter
@@ -395,19 +402,36 @@ const VatikaMenu: React.FC = () => {
       result = result.filter(item => selectedPriceRanges.includes(item.priceRange));
     }
 
-    // 4. Sort
+    // 4. Custom Ordering (Signature Dishes First)
+    const signatureOrder = [
+      'Vatika Special Veg',
+      'Paneer Tikka',
+      'Paneer Butter Masala',
+      'Rabdi Jalebi (100gm)',
+      'Veg Biryani'
+    ];
+
     result = [...result].sort((a, b) => {
-      switch (sortOption) {
-        case 'price-asc': return a.price - b.price;
-        case 'price-desc': return b.price - a.price;
-        case 'name-asc': return a.name.localeCompare(b.name);
-        case 'name-desc': return b.name.localeCompare(a.name);
-        default: return 0;
+      const indexA = signatureOrder.indexOf(a.name);
+      const indexB = signatureOrder.indexOf(b.name);
+
+      // If both are signature items, sort by defined order
+      if (indexA !== -1 && indexB !== -1) {
+        return indexA - indexB;
       }
+
+      // If a is signature, it comes first
+      if (indexA !== -1) return -1;
+
+      // If b is signature, it comes first
+      if (indexB !== -1) return 1;
+
+      // Otherwise keep original order
+      return 0;
     });
 
     return result;
-  }, [allItems, searchQuery, selectedCategories, selectedPriceRanges, sortOption]);
+  }, [allItems, searchQuery, selectedCategories, selectedPriceRanges]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories(prev => 
@@ -434,18 +458,70 @@ const VatikaMenu: React.FC = () => {
     { label: '₹250+', value: '250+' }
   ];
 
-  const getHash = (str: string) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash;
-    }
-    return Math.abs(hash);
+  const getImageUrl = (itemName: string) => {
+    let name = itemName.toLowerCase();
+    name = name.replace(/\s*\(.*?\)/g, '').replace(/[^a-z0-9\s]/g, '').trim();
+
+    // Specific mappings for popular items
+    if (name.includes('paneer butter masala')) name = 'paneer-butter-masala-indian-curry';
+    else if (name.includes('veg manchurian')) name = 'veg-manchurian-dry-indian';
+    else if (name.includes('rabdi jalebi')) name = 'jalebi-indian-sweet-dessert';
+    else if (name.includes('veg biryani')) name = 'veg-biryani-indian-rice';
+    else if (name.includes('paneer tikka')) name = 'paneer-tikka-kebab';
+    else if (name.includes('vatika special')) name = 'indian-thali-meal';
+
+    // General category mappings
+    else if (name.includes('roti')) name = 'indian-tandoori-roti-bread';
+    else if (name.includes('naan')) name = 'butter-naan-indian-bread';
+    else if (name.includes('kulcha')) name = 'amritsari-kulcha';
+    else if (name.includes('dal')) name = 'dal-tadka-fry-indian';
+    else if (name.includes('rice') && !name.includes('fried')) name = 'steamed-basmati-rice-bowl';
+    else if (name.includes('fried rice')) name = 'veg-fried-rice-chinese';
+    else if (name.includes('paneer')) name = 'paneer-curry-indian-gravy';
+    else if (name.includes('kofta')) name = 'malai-kofta-curry';
+    else if (name.includes('manchurian')) name = 'veg-manchurian-gravy';
+    else if (name.includes('noodles')) name = 'veg-hakka-noodles-chinese';
+    else if (name.includes('soup')) name = 'tomato-soup-bowl';
+    else if (name.includes('juice')) name = 'fresh-fruit-juice-glass';
+    else if (name.includes('shake')) name = 'milkshake-glass-dessert';
+    else if (name.includes('mocktail')) name = 'colorful-mocktail-drink';
+    else if (name.includes('ice cream')) name = 'ice-cream-scoop-bowl';
+    else if (name === 'tea') name = 'masala-chai-tea-cup';
+    else if (name === 'coffee') name = 'filter-coffee-indian-cup';
+    else if (name.includes('salad')) name = 'fresh-green-salad-plate';
+    else if (name.includes('raita')) name = 'cucumber-raita-bowl';
+    else if (name.includes('papad')) name = 'roasted-papadum';
+    else if (name.includes('sandwich')) name = 'grilled-sandwich-veg';
+    else if (name.includes('pizza')) name = 'veg-pizza-slice';
+    else if (name.includes('burger')) name = 'veg-burger';
+
+    return `https://source.unsplash.com/800x600/?${name.replace(/\s+/g, '-')}`;
   };
 
   return (
     <div className="min-h-screen bg-stone-50 font-sans text-stone-900">
+      <SEO 
+        title="Vatika Pure Veg Menu | Authentic Indian & Chinese Cuisine"
+        description="Explore our extensive menu featuring Paneer Tikka, Veg Biryani, Chinese Starters, and delicious Desserts. Best vegetarian food in Parbhani."
+        schema={{
+          "@type": "Menu",
+          "name": "Vatika Pure Veg Menu",
+          "description": "Authentic Vegetarian Menu",
+          "hasMenuSection": menuData.map(cat => ({
+            "@type": "MenuSection",
+            "name": cat.name,
+            "hasMenuItem": cat.items.map(item => ({
+              "@type": "MenuItem",
+              "name": item.name,
+              "offers": {
+                "@type": "Offer",
+                "price": item.price,
+                "priceCurrency": "INR"
+              }
+            }))
+          }))
+        }}
+      />
       {/* Mobile Header & Controls */}
       <div className="sticky top-0 z-40 bg-white border-b border-amber-100 shadow-sm lg:hidden">
         <div className="p-4 space-y-3">
@@ -491,6 +567,7 @@ const VatikaMenu: React.FC = () => {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed inset-y-0 right-0 w-80 bg-white z-50 shadow-2xl overflow-y-auto lg:hidden"
             >
+              {/* ... Drawer Content ... */}
               <div className="p-5 space-y-8">
                 <div className="flex justify-between items-center">
                   <h2 className="text-xl font-serif font-bold text-stone-800">Filters</h2>
@@ -650,36 +727,12 @@ const VatikaMenu: React.FC = () => {
               
               <div className="flex items-center gap-4">
                 <span className="text-sm text-stone-500 font-medium">{filteredItems.length} items found</span>
-                <div className="h-6 w-[1px] bg-stone-200"></div>
-                <div className="relative group">
-                  <select
-                    value={sortOption}
-                    onChange={(e) => setSortOption(e.target.value as any)}
-                    className="appearance-none bg-transparent pl-2 pr-8 py-1 text-sm font-bold text-stone-700 cursor-pointer focus:outline-none"
-                  >
-                    <option value="price-asc">Price: Low to High</option>
-                    <option value="price-desc">Price: High to Low</option>
-                    <option value="name-asc">Name: A to Z</option>
-                    <option value="name-desc">Name: Z to A</option>
-                  </select>
-                  <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
-                </div>
               </div>
             </div>
 
-            {/* Mobile Sort & Count */}
+            {/* Mobile Count */}
             <div className="lg:hidden flex justify-between items-center mb-4 px-2">
               <span className="text-sm text-stone-500 font-medium">{filteredItems.length} results</span>
-              <select
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value as any)}
-                className="bg-transparent text-sm font-bold text-stone-700 focus:outline-none"
-              >
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="name-asc">Name: A to Z</option>
-                <option value="name-desc">Name: Z to A</option>
-              </select>
             </div>
 
             {/* Results Grid */}
@@ -707,9 +760,10 @@ const VatikaMenu: React.FC = () => {
                       >
                         <div className="h-48 overflow-hidden relative bg-stone-100">
                           <img
-                            src={`https://loremflickr.com/600/400/indian,food?lock=${getHash(item.name)}`}
+                            src={getImageUrl(item.name)}
                             alt={item.name}
                             loading="lazy"
+                            referrerPolicy="no-referrer"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                           <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider text-stone-600 shadow-sm">
@@ -735,9 +789,14 @@ const VatikaMenu: React.FC = () => {
                               <span className="text-xs font-bold text-stone-600">4.2</span>
                               <span className="text-xs text-stone-400">(20+)</span>
                             </div>
-                            <button className="text-xs font-bold text-white bg-amber-600 px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors shadow-sm shadow-amber-200">
-                              Add to Order
-                            </button>
+                            <a
+                              href="https://www.zomato.com/parbhani/hotel-vatika-1-parbhani-locality/order"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-bold text-white bg-[#E23744] px-4 py-2 rounded-lg hover:scale-105 transition-transform shadow-sm shadow-red-200"
+                            >
+                              Order Now on Zomato
+                            </a>
                           </div>
                         </div>
                       </motion.div>
